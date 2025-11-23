@@ -1,19 +1,23 @@
+// src/App.jsx
 import { useState } from "react";
 import "./App.css";
 
 function App() {
-  // 👇 Our list of transactions (state)
+  // Transactions state
   const [transactions, setTransactions] = useState([
     { id: 1, text: "Salary", amount: 20000 },
     { id: 2, text: "Groceries", amount: -1500 },
     { id: 3, text: "Movie", amount: -300 },
   ]);
 
-  // 👇 Form state
+  // Form state
   const [text, setText] = useState("");
   const [amount, setAmount] = useState("");
 
-  // 👉 Calculate totals
+  // Theme state
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Derived values
   const amounts = transactions.map((t) => t.amount);
   const totalBalance = amounts.reduce((acc, val) => acc + val, 0);
   const income = amounts
@@ -23,9 +27,9 @@ function App() {
     .filter((val) => val < 0)
     .reduce((acc, val) => acc + val, 0);
 
-  // 👉 Handle form submit
+  // Add transaction
   const handleSubmit = (e) => {
-    e.preventDefault(); // stop page refresh
+    e.preventDefault();
 
     if (!text || !amount) {
       alert("Please enter a description and amount");
@@ -43,16 +47,30 @@ function App() {
     setAmount("");
   };
 
+  // 🔴 Delete transaction
+  const handleDelete = (id) => {
+    setTransactions(transactions.filter((t) => t.id !== id));
+  };
+
+  // 🌗 Toggle theme
+  const handleToggleTheme = () => {
+    setIsDarkMode((prev) => !prev);
+  };
+
   return (
-    <div className="app">
-      <h1>Expense Tracker</h1>
+    <div className={`app ${isDarkMode ? "dark" : "light"}`}>
+      {/* Header with theme toggle */}
+      <header className="header">
+        <h1>Expense Tracker</h1>
+        <button className="theme-toggle" onClick={handleToggleTheme}>
+          {isDarkMode ? "☀️ Light" : "🌙 Dark"}
+        </button>
+      </header>
 
       {/* Balance */}
       <div className="card balance-card">
         <h2>Your Balance</h2>
-        <p className="balance-amount">
-          ₹ {totalBalance.toFixed(2)}
-        </p>
+        <p className="balance-amount">₹ {totalBalance.toFixed(2)}</p>
       </div>
 
       {/* Income & Expense Summary */}
@@ -106,12 +124,21 @@ function App() {
           {transactions.map((t) => (
             <li
               key={t.id}
-              className={t.amount < 0 ? "minus" : "plus"}
+              className={`transaction-item ${
+                t.amount < 0 ? "minus" : "plus"
+              }`}
             >
-              <span>{t.text}</span>
-              <span>
+              <span className="transaction-text">{t.text}</span>
+              <span className="transaction-amount">
                 {t.amount < 0 ? "-" : "+"}₹ {Math.abs(t.amount)}
               </span>
+              <button
+                className="delete-btn"
+                onClick={() => handleDelete(t.id)}
+                aria-label="Delete transaction"
+              >
+                ✕
+              </button>
             </li>
           ))}
         </ul>
