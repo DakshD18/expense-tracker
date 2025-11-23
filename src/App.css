@@ -100,9 +100,10 @@ h1 {
   color: white;
   font-size: 1rem;
   font-weight: 600;
+  min-width: 100%; /* make button span the form width on small layout */
 }
 
-
+/* preserve hover opacity */
 .btn:hover {
   opacity: 0.9;
 }
@@ -121,10 +122,9 @@ h1 {
   margin-bottom: 0.5rem;
   border-right: 5px solid transparent;
   border-radius: 0.5rem;
-  background-color: transparent; /* changed from white */
+  background-color: transparent; /* uses current theme */
   color: inherit; /* uses current theme text color */
 }
-
 
 /* Green for income, red for expense */
 .transaction-list li.plus {
@@ -133,4 +133,29 @@ h1 {
 
 .transaction-list li.minus {
   border-right-color: #ef4444;
+}
+
+/* --- Added / changed rules --- */
+
+/* If a .card contains the .transaction-list, make that card transparent (Chrome supports :has).
+   Also provide a fallback class `.transaction-card` you can add in HTML if :has isn't available. */
+.card:has(.transaction-list),
+.transaction-card {
+  background-color: transparent;
+  box-shadow: none;
+  padding: 0; /* allow inner list/card content to control spacing */
+}
+
+/* Give each transaction item a subtle dark rounded background so the colored border stands out
+   and the white card won't be needed for contrast */
+.transaction-list li {
+  background-color: rgba(255,255,255,0.03);
+  padding: 0.75rem;
+}
+
+/* So the summary / balance area doesn't appear as a giant white button */
+.card.balance-card,
+.card.balance {
+  background-color: rgba(255,255,255,0.04);
+  box-shadow: none;
 }
